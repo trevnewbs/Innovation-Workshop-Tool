@@ -85,7 +85,7 @@ const getDashboardData = (startDate: dayjs.Dayjs, endDate: dayjs.Dayjs) => ({
     {
       id: '1',
       description: 'Mobile app performance issues',
-      workshop: 'Q4 Technical Review',
+      workshop: 'Q1 Product Innovation Workshop',
       workshopId: 'w1',
       acuity: 8,
       strategicImportance: 3,
@@ -380,14 +380,26 @@ export const Dashboard: React.FC = () => {
                         View Details
                       </Button>
                     ]}
+                    extra={
+                      <Space direction="vertical" align="end">
+                        <Tag color="green">Focal Area</Tag>
+                        <Space>
+                          <Text>Acuity:</Text>
+                          <Rate disabled defaultValue={Math.round(area.acuity / 2)} count={5} />
+                        </Space>
+                        <Space>
+                          <Text>Strategic Importance:</Text>
+                          <Rate disabled defaultValue={Math.round(area.strategicImportance / 2)} count={5} />
+                        </Space>
+                      </Space>
+                    }
                   >
                     <List.Item.Meta
                       title={area.description}
                       description={
-                        <Space direction="vertical" style={{ width: '100%' }}>
+                        <Space direction="vertical">
                           <Text>Workshop: {area.workshop}</Text>
-                          <Text>Acuity: {area.acuity}/10</Text>
-                          <Progress percent={area.progress} size="small" />
+                          <Text>Submitted by: {area.submittedBy}</Text>
                         </Space>
                       }
                     />
