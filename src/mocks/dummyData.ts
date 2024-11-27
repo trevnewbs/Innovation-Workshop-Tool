@@ -25,33 +25,105 @@ export interface Workshop {
 }
 
 export const mockProblems: Problem[] = [
+  // Top Right Quadrant (High Acuity, High Strategic Importance)
   {
     id: '1',
-    description: 'Limited data integration capabilities with legacy systems',
-    acuity: 8,
+    description: 'Critical security vulnerabilities in cloud infrastructure',
+    acuity: 9,
     strategicImportance: 9,
-    submittedBy: 'John Smith - Enterprise Solutions',
-    notes: ['Critical for enterprise clients', 'Affects 60% of current customers'],
-    isFocalArea: true,
+    submittedBy: 'Alice Chen - Security Team',
+    notes: ['Multiple potential entry points identified', 'Affects core infrastructure'],
+    isFocalArea: false,
   },
   {
     id: '2',
-    description: 'Poor mobile user experience in field operations',
+    description: 'Legacy system performance degradation',
+    acuity: 8,
+    strategicImportance: 8,
+    submittedBy: 'John Smith - Enterprise Solutions',
+    notes: ['Affecting response times', 'Customer complaints increasing'],
+    isFocalArea: false,
+  },
+  
+  // Top Left Quadrant (High Acuity, Low Strategic Importance)
+  {
+    id: '3',
+    description: 'Office printer network connectivity issues',
+    acuity: 8,
+    strategicImportance: 3,
+    submittedBy: 'Sarah Johnson - Office Management',
+    notes: ['Frequent disconnections', 'Affects daily operations'],
+    isFocalArea: true,
+  },
+  {
+    id: '4',
+    description: 'Developer environment setup complexity',
     acuity: 7,
-    strategicImportance: 6,
-    submittedBy: 'Sarah Johnson - Field Operations',
-    notes: ['Increasing number of mobile users', 'Competition has better mobile support'],
+    strategicImportance: 4,
+    submittedBy: 'Mike Brown - Development Team',
+    notes: ['New hire onboarding delays', 'Inconsistent environments'],
+    isFocalArea: true,
+  },
+
+  // Bottom Right Quadrant (Low Acuity, High Strategic Importance)
+  {
+    id: '5',
+    description: 'AI/ML integration opportunities',
+    acuity: 4,
+    strategicImportance: 9,
+    submittedBy: 'Emily Wong - Innovation Team',
+    notes: ['Competitive advantage potential', 'Long-term strategic value'],
     isFocalArea: false,
   },
   {
-    id: '3',
-    description: 'Lack of real-time analytics for decision making',
-    acuity: 9,
-    strategicImportance: 8,
-    submittedBy: 'Mike Brown - Analytics Team',
-    notes: ['Could provide competitive advantage', 'High demand from executive users'],
+    id: '6',
+    description: 'Cloud cost optimization',
+    acuity: 3,
+    strategicImportance: 7,
+    submittedBy: 'David Miller - Cloud Operations',
+    notes: ['Gradual cost increase', 'Optimization opportunities identified'],
     isFocalArea: false,
   },
+
+  // Bottom Left Quadrant (Low Acuity, Low Strategic Importance)
+  {
+    id: '7',
+    description: 'Internal documentation updates needed',
+    acuity: 3,
+    strategicImportance: 2,
+    submittedBy: 'Lisa Park - Technical Writing',
+    notes: ['Some outdated sections', 'Minor inconsistencies'],
+    isFocalArea: false,
+  },
+  {
+    id: '8',
+    description: 'Meeting room booking system upgrade',
+    acuity: 2,
+    strategicImportance: 3,
+    submittedBy: 'Tom Wilson - Facilities',
+    notes: ['Current system functional but dated', 'Nice-to-have improvements'],
+    isFocalArea: false,
+  },
+
+  // Additional problems spread across quadrants
+  {
+    id: '9',
+    description: 'Local development environment issues',
+    acuity: 8,
+    strategicImportance: 2,
+    submittedBy: 'Rachel Green - Development Team',
+    notes: ['Significant developer time waste', 'Affects team productivity'],
+    isFocalArea: true,
+  },
+  {
+    id: '10',
+    description: 'Internal tool performance issues',
+    acuity: 7,
+    strategicImportance: 3,
+    submittedBy: 'James Wilson - Internal Tools',
+    notes: ['Slowing down daily operations', 'Multiple team complaints'],
+    isFocalArea: true,
+  }
 ];
 
 export const mockWorkshops: Workshop[] = [

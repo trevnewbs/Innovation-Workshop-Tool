@@ -1,8 +1,17 @@
 import React from 'react';
 import { Card, Typography } from 'antd';
-import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, CartesianGrid, Tooltip, ReferenceLine, Label } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, Label, ResponsiveContainer } from 'recharts';
+import { useResizeObserver } from '../../hooks/useResizeObserver';
 
 const { Text } = Typography;
+
+// Color constants
+const COLORS = {
+  FOCAL: '#10B981', // Green color for focal areas
+  NON_FOCAL: '#6B7280', // Gray color for non-focal areas
+  FOCAL_STROKE: '#047857', // Darker green for focal area stroke
+  NON_FOCAL_STROKE: '#4B5563', // Darker gray for non-focal stroke
+} as const;
 
 interface Problem {
   id: string;
@@ -13,33 +22,45 @@ interface Problem {
   isFocalArea?: boolean;
 }
 
+interface DataPoint {
+  x: number;
+  y: number;
+  name: string;
+  problem: Problem;
+}
+
 interface ProblemMapProps {
   problems: Problem[];
-  width?: number;
-  height?: number;
+  minHeight?: number;
+}
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: DataPoint;
+  }>;
 }
 
 export const ProblemMap: React.FC<ProblemMapProps> = ({
   problems,
-  width = 800,
-  height = 600,
+  minHeight = 500,
 }) => {
+  const [containerRef] = useResizeObserver<HTMLDivElement>();
   const chartMargin = { top: 20, right: 20, bottom: 60, left: 60 };
   const midPoint = 5; // Since our scales are 1-10
 
   // Transform problems for the scatter plot
-  const data = problems.map(problem => ({
+  const data: DataPoint[] = problems.map(problem => ({
     x: problem.strategicImportance,
     y: problem.acuity,
-    z: 1, // Size of the point
     name: problem.description,
     problem
   }));
 
   // Custom tooltip to show problem details
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
     if (active && payload && payload.length) {
-      const problem = payload[0].payload.problem;
+      const { problem } = payload[0].payload;
       return (
         <div className="bg-white p-4 shadow-lg rounded-lg border border-gray-200">
           <Text strong className="block mb-2">Problem Details</Text>
@@ -48,8 +69,8 @@ export const ProblemMap: React.FC<ProblemMapProps> = ({
           <Text className="block">Strategic Importance: {problem.strategicImportance}/10</Text>
           <Text className="block">Submitted by: {problem.submittedBy}</Text>
           {problem.isFocalArea && (
-            <div className="mt-2">
-              <Text className="text-red-500">Focal Area</Text>
+            <div className="mt-2 text-emerald-600 font-semibold">
+              Focal Area
             </div>
           )}
         </div>
@@ -58,101 +79,69 @@ export const ProblemMap: React.FC<ProblemMapProps> = ({
     return null;
   };
 
-  // Quadrant labels
-  const QuadrantLabel = ({ x, y, value }: { x: number, y: number, value: string }) => (
-    <text
-      x={x}
-      y={y}
-      fill="#666"
-      textAnchor="middle"
-      fontSize={12}
-    >
-      {value}
-    </text>
-  );
-
   return (
     <Card className="w-full">
       <Text className="block mb-4 text-gray-600">
         This map visualizes problems based on their acuity (severity) and strategic importance.
-        Problems in red represent focal areas that need immediate attention.
+        Problems in green represent focal areas that need immediate attention.
       </Text>
       
-      <div className="relative">
-        <ScatterChart
-          width={width}
-          height={height}
-          margin={chartMargin}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          
-          <XAxis
-            type="number"
-            dataKey="x"
-            name="Strategic Importance"
-            domain={[0, 10]}
-            label={{
-              value: 'Strategic Importance',
-              position: 'bottom',
-              offset: 20
-            }}
-          />
-          
-          <YAxis
-            type="number"
-            dataKey="y"
-            name="Acuity"
-            domain={[0, 10]}
-            label={{
-              value: 'Acuity (Severity)',
-              angle: -90,
-              position: 'left',
-              offset: 40
-            }}
-          />
+      <div ref={containerRef} style={{ width: '100%', minHeight }}>
+        <ResponsiveContainer width="100%" height={minHeight}>
+          <ScatterChart margin={chartMargin}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              type="number"
+              dataKey="x"
+              name="Strategic Importance"
+              domain={[0, 10]}
+              label={{ value: 'Strategic Importance', position: 'bottom' }}
+            />
+            <YAxis
+              type="number"
+              dataKey="y"
+              name="Acuity"
+              domain={[0, 10]}
+              label={{ value: 'Acuity', angle: -90, position: 'left' }}
+            />
+            
+            {/* Quadrant reference lines */}
+            <ReferenceLine x={midPoint} stroke="#666" strokeDasharray="3 3">
+              <Label value="Strategic Importance Threshold" position="top" />
+            </ReferenceLine>
+            <ReferenceLine y={midPoint} stroke="#666" strokeDasharray="3 3">
+              <Label value="Acuity Threshold" position="right" />
+            </ReferenceLine>
 
-          {/* Reference lines for quadrants */}
-          <ReferenceLine x={midPoint} stroke="#666" strokeDasharray="3 3" />
-          <ReferenceLine y={midPoint} stroke="#666" strokeDasharray="3 3" />
+            <Tooltip content={<CustomTooltip />} />
+            
+            {/* Non-focal areas */}
+            <Scatter
+              name="Non-Focal Problems"
+              data={data.filter(d => !d.problem.isFocalArea)}
+              fill={COLORS.NON_FOCAL}
+              fillOpacity={0.6}
+              stroke={COLORS.NON_FOCAL_STROKE}
+              strokeWidth={1}
+            />
 
-          {/* Quadrant labels */}
-          <QuadrantLabel
-            x={width * 0.25}
-            y={height * 0.25}
-            value="Operational Focus Area"
-          />
-          <QuadrantLabel
-            x={width * 0.75}
-            y={height * 0.25}
-            value="Strategic Priorities"
-          />
-          <QuadrantLabel
-            x={width * 0.25}
-            y={height * 0.75}
-            value="Low Priority"
-          />
-          <QuadrantLabel
-            x={width * 0.75}
-            y={height * 0.75}
-            value="Strategic Opportunities"
-          />
-
-          <Tooltip content={<CustomTooltip />} />
-          
-          <Scatter
-            name="Problems"
-            data={data}
-            fill={(entry: any) => entry.problem.isFocalArea ? '#ef4444' : '#1890ff'}
-          />
-          
-          <ZAxis type="number" dataKey="z" range={[100, 100]} />
-        </ScatterChart>
+            {/* Focal areas */}
+            <Scatter
+              name="Focal Problems"
+              data={data.filter(d => d.problem.isFocalArea)}
+              fill={COLORS.FOCAL}
+              fillOpacity={0.7}
+              stroke={COLORS.FOCAL_STROKE}
+              strokeWidth={2}
+            />
+          </ScatterChart>
+        </ResponsiveContainer>
       </div>
 
       <div className="mt-4">
         <Text type="secondary">
-          Hover over points to see problem details. Problems in the top-left quadrant
-          represent operational issues that need immediate attention.
+          Hover over points to see problem details. Green points in the top-left quadrant
+          represent focal areas that need immediate attention despite lower strategic importance.
         </Text>
       </div>
     </Card>
