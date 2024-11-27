@@ -18,6 +18,10 @@ export function Workshops() {
     return statusColors[status as keyof typeof statusColors] || 'default';
   };
 
+  const handleWorkshopClick = (id: string) => {
+    navigate(`/workshops/${id}`);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -36,7 +40,7 @@ export function Workshops() {
           <Col key={workshop.id} xs={24} sm={12} lg={8}>
             <Card
               hoverable
-              onClick={() => navigate(`/workshops/${workshop.id}`)}
+              onClick={() => handleWorkshopClick(workshop.id)}
               className="h-full"
             >
               <div className="flex flex-col h-full">
